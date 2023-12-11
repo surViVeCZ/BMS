@@ -37,35 +37,40 @@ void printMatrix(const std::vector<std::vector<double>>& matrix) {
 std::vector<std::vector<int>> encodeLDPC(const std::string &message, const std::vector<std::vector<int>> &parityCheckMatrix) {
     std::cout << "LDPC Encoding of the message: " << message << std::endl;
 
+    // Convert input message to a bit vector
     std::string binaryMessage = "";
     for (char c : message) {
         std::bitset<8> byte(c);
         binaryMessage += byte.to_string();
     }
-    // convert string to bit vector , msb first
+
+    // Convert string to bit vector, MSB first
     std::vector<bool> binaryMessageVector;
     for (char c : binaryMessage) {
-        for (int i = 8; i > 0; i--) {
-            binaryMessageVector.push_back(c & (1 << (i - 1)));
-        }
-    }  
+        binaryMessageVector.push_back(c == '1');
+    }
 
-
-    //násobení 8bitů s G
+    // Get the coding matrix G
     matrix G = codingMatrix(parityCheckMatrix);
-    //get the G size
-    int height = G.size();
-    //vector with the size of G height
-    matrix bin_mes(height);
-    for(int i = 0; i < height; i++){
+
+    // Ensure the size of the binary message vector matches the size of G
+    if (binaryMessageVector.size() < G.size()) {
+        size_t paddingSize = G.size() - binaryMessageVector.size();
+        binaryMessageVector.insert(binaryMessageVector.end(), paddingSize, false); // Adding zeros for padding
+    } else if (binaryMessageVector.size() > G.size()) {
+        std::cerr << "Error: Message size is larger than matrix size. Truncating the message." << std::endl;
+        binaryMessageVector.resize(G.size()); 
+    }
+
+    // Create a matrix representation of the binary message
+    matrix bin_mes(G.size());
+    for (size_t i = 0; i < G.size(); ++i) {
         bin_mes[i].resize(1);
         bin_mes[i][0] = binaryMessageVector[i] ? 1 : 0;
     }
-    //convert binary string to a vector of integers
-     
-    //multiply G and bin_mes
-    matrix encodedMessage = binaryProduct(G, bin_mes);
 
+    // Multiply G and bin_mes
+    matrix encodedMessage = binaryProduct(G, bin_mes);
     return encodedMessage;
 }
 

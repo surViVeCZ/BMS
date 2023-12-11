@@ -21,12 +21,16 @@ void encodeAndPrint(const std::string& input, const std::string& matrix_csv) {
     }
 
     int n = 2 * text.size();
-    int K = 8;
-    int num_cols = n;
     int d_c = text.size();
     int d_v = d_c - 1;
 
-    std::vector<std::vector<int>> firstBlock = computeFirstBlock(num_cols, K);
+    int num_cols = n;
+    int num_rows = n / d_v;
+    std::cout << "num rows of the first block: " << num_rows << std::endl;
+    std::cout << "num cols of the first block: " << num_cols << std::endl;
+
+
+    std::vector<std::vector<int>> firstBlock = computeFirstBlock(num_cols, num_rows);
     std::cout << "First block:" << std::endl;
     printMatrix(firstBlock);
 
@@ -35,23 +39,23 @@ void encodeAndPrint(const std::string& input, const std::string& matrix_csv) {
     std::cout << "d_v = " << d_v << std::endl;
     std::cout << "d_c = " << d_c << std::endl;
 
-    std::vector<std::vector<int>> parityCheckMatrix = generateParityCheckMatrix(n, d_v, d_c, firstBlock, 33, matrix_csv);
+    std::vector<std::vector<int>> parityCheckMatrix = generateParityCheckMatrix(n, d_v, d_c, firstBlock, 42, matrix_csv);
     std::cout << "Parity-Check Matrix (H):" << std::endl;    
     printMatrix(parityCheckMatrix);
 
     std::vector<std::vector<int>> encodedMessage = encodeLDPC(input, parityCheckMatrix);
     std::cout << "Encoded message: ";
 
-    std::vector<int> flattenedMessage;
-    for (const auto& row : encodedMessage) {
-        flattenedMessage.insert(flattenedMessage.end(), row.begin(), row.end());
-    }
+    printFirstColumn(encodedMessage);
+}
 
-    for (const auto& bit : flattenedMessage) {
-        std::cout << bit;
+void printFirstColumn(const std::vector<std::vector<int>>& matrix) {
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        std::cout << matrix[i][0];
     }
     std::cout << std::endl;
 }
+
 
 void processLDPC(const std::string& input, const std::string& matrix_csv, const std::string& mode) {
     if (!validateInput(input, mode)) {

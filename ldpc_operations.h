@@ -11,6 +11,7 @@ bool validateInput(const std::string &input, const std::string &mode);
 
 void printMatrix(const std::vector<std::vector<int>>& matrix);
 void printMatrix(const std::vector<std::vector<double>>& matrix);
+void printFirstColumn(const std::vector<std::vector<int>>& matrix);
 
 matrix encodeLDPC(const std::string &message, const std::vector<std::vector<int>> &parityCheckMatrix);
 

@@ -21,7 +21,7 @@ std::mt19937& getGenerator(int seed);
 
 std::mt19937& checkRandomState(int seed = 42);
 
-matrix computeFirstBlock(int num_cols, int num_ones_per_row);
+matrix computeFirstBlock(int num_cols, int num_rows);
 
 matrix transposeMatrix(const std::vector<std::vector<int>>& matrix);
 

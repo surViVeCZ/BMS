@@ -157,18 +157,25 @@ std::mt19937& checkRandomState(int seed) {
     return getGenerator(seed);
 }
 
-matrix computeFirstBlock(int num_cols, int num_ones_per_row) {
-    int num_rows = static_cast<int>(ceil(static_cast<double>(num_cols) / num_ones_per_row));
+matrix computeFirstBlock(int num_cols, int num_rows) {
+    int block_size = num_rows / 2; // Divide the number of rows by 2 for the pattern
+
     matrix firstBlock(num_rows, std::vector<int>(num_cols, 0));
 
-    for (int i = 0; i < num_rows; ++i) {
-        int start_col = (i % 2 == 0) ? 0 : num_ones_per_row;
-        for (int j = start_col; j < num_cols; j += (2 * num_ones_per_row)) {
-            for (int k = 0; k < num_ones_per_row && (j + k) < num_cols; ++k) {
-                firstBlock[i][j + k] = 1;
-            }
+    for (int i = 0; i < block_size; ++i) {
+        // Fill the first half of rows with 16 ones followed by 16 zeros
+        for (int j = 0; j < num_cols / 2; ++j) {
+            firstBlock[i][j] = 1; // Fill the first half of the rows with 1s
         }
     }
+
+    for (int i = block_size; i < num_rows; ++i) {
+        // Fill the second half of rows with 16 zeros followed by 16 ones
+        for (int j = num_cols / 2; j < num_cols; ++j) {
+            firstBlock[i][j] = 1; // Fill the second half of the rows with 1s
+        }
+    }
+
     return firstBlock;
 }
 
